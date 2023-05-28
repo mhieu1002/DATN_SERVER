@@ -1,0 +1,22 @@
+fastapi == 0.65.1
+
+uvicorn == 0.14.0
+
+motor == 2.4.0
+gunicorn==20.0.4
+requests==2.25.1
+datasets==1.9.0
+torch==2.0.1
+numpy
+librosa==0.8.1
+ipython==7.34.0
+soundfile
+flask[async]
+flask-cors
+scipy
+inflect
+Unidecode
+pydub
+git+https://github.com/CodeLinkIO/Vietnamese-text-normalization.git@main
+git+https://github.com/CodeLinkIO/vietnam-number.git@master
+git+https://github.com/NVIDIA/dllogger.git@26a0f8f1958de2c0c460925ff6102a4d2486d6cc#egg=dllogger
