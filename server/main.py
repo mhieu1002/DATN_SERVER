@@ -91,11 +91,9 @@ def search_posts(keyword: str, mongodb_service: MongoDBService = Depends(get_mon
 # Create a post
 @app.post("/posts")
 def create_post(post: Post, mongodb_service: MongoDBService = Depends(get_mongodb_service)):
-    # Kiểm tra xem đã có bài viết với title đã cho hay chưa
     existing_post = mongodb_service.get_collection().find_one({"title": post.title})
     if existing_post:
         raise HTTPException(status_code=400, detail="A post with the same title already exists")
-        
     post_dict = post.dict()
     post_dict["date"] = datetime.now().strftime("%A %d/%m/%Y - %H:%M")
 

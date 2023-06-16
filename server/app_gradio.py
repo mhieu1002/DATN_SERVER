@@ -28,7 +28,7 @@ arguments = [
     '--fastpitch',
     'checkpoints/FastPitch_checkpoint_40.pt',
     '--mbmelgan',
-    'checkpoints/UTC2TTS_13efcb4_0375.pt',
+    'checkpoints/UTC2TTS_13efcb4_0575.pt',
     '--waveglow',
     'SKIP',
     '--batch-size',
@@ -61,6 +61,7 @@ def text_to_speech(text_input):
     sentences, breaks = split_sentences(text_cleaned, MAX_LENGTH)
 
     audios = []
+    
     for sentence in sentences:
         result = infer_mb_melgan([sentence], args)
         audio, rate, perf = result
