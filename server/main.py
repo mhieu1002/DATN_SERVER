@@ -1,4 +1,6 @@
 import os
+import re
+from typing import List
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel, Field
 from pymongo import MongoClient
@@ -62,11 +64,6 @@ class MongoDBService:
 
     def get_collection(self):
         return self.posts_collection
-    
-    def search_posts(self, keyword: str):
-        query = {"title": {"$regex": f".*{keyword}.*", "$options": "i"}}
-        posts = self.posts_collection.find(query)
-        return list(posts)
 
 # Dependency for MongoDBService
 def get_mongodb_service():
@@ -78,16 +75,25 @@ def get_mongodb_service():
 
 @app.get("/posts/search")
 def search_posts(keyword: str, mongodb_service: MongoDBService = Depends(get_mongodb_service)):
-    results = mongodb_service.search_posts(keyword)
-    formatted_posts = []
-    for post in results:
-        date_parts = post["date"].split(" ")
-        day_of_week = day_mapping.get(date_parts[0], date_parts[0])
-        formatted_date = f"{day_of_week} {date_parts[1]} - {date_parts[3]}"
-        post["date"] = formatted_date
-        formatted_posts.append(Post(**post))
-    return formatted_posts
-    
+    # Tách từ khoá thành các từ nhỏ
+    keywords = keyword.lower().split()
+
+    # Tìm kiếm bài viết
+    posts = mongodb_service.get_collection().find()
+    matched_posts = []
+
+    for post in posts:
+        post_title = post["title"].lower()
+        matches = all(kw in post_title for kw in keywords)
+        if matches:
+            date_parts = post["date"].split(" ")
+            day_of_week = day_mapping.get(date_parts[0], date_parts[0])
+            formatted_date = f"{day_of_week} {date_parts[1]} - {date_parts[3]}"
+            post["date"] = formatted_date
+            matched_posts.append(Post(**post))
+
+    return matched_posts
+
 # Create a post
 @app.post("/posts")
 def create_post(post: Post, mongodb_service: MongoDBService = Depends(get_mongodb_service)):
